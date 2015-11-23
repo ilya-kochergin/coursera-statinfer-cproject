@@ -1,0 +1,79 @@
+---
+title: "The Effect of Vitamin C on Tooth Growth in Guinea Pigs"
+subtitle: "Statitistic inference course project"
+author: "Ilya Kochergin"
+date: "22 nov 2015 "
+output: pdf_document
+---
+## Dataset description from documetation
+
+### Description
+
+The response is the length of odontoblasts (teeth) in each of 10 guinea pigs at each of three dose levels of Vitamin C (0.5, 1, and 2 mg) with each of two delivery methods (orange juice or ascorbic acid).
+
+###Format
+
+A data frame with 60 observations on 3 variables.
+
+[,1]	len	numeric	Tooth length
+[,2]	supp	factor	Supplement type (VC or OJ).
+[,3]	dose	numeric	Dose in milligrams.
+
+
+[//]: # (Load the ToothGrowth data and perform some basic exploratory data analyses )
+```{r}
+library(datasets)
+data(ToothGrowth)
+```
+
+```{r}
+library(ggplot2)
+ggplot(ToothGrowth, aes(x=factor(dose), y=len, fill=factor(dose)))+geom_boxplot()+facet_grid(.~supp)+labs(title="Toothgrowth depending dose and supplement type")
+```
+
+## A basic summary of the data.
+
+```{r}
+oj_df=(subset(ToothGrowth,supp=='OJ')[c(1,3)]) # Orange Juice
+sd(oj_df$len)
+mean(oj_df$len)
+vc_df=(subset(ToothGrowth,supp=='VC')[c(1,3)]) # Vitamin C
+
+sd(vc_df$len)
+mean(vc_df$len)
+```
+
+Standard deviance too diffrent in 2 groups (OJ and VC) so we should 
+use parameter var.equal=FALSE in t.test()
+
+## Group dataset by dose 
+```{r}
+D05  <-  subset(ToothGrowth,dose==.5)
+D1  <-  subset(ToothGrowth,dose==1)
+D2  <-  subset(ToothGrowth,dose==2)
+# number observation in each group:
+table(ToothGrowth$supp,ToothGrowth$dose)
+```
+
+
+## T-test of each group
+
+```{r}
+T05 <- t.test(len~supp,paired=FALSE,var.equal=FALSE,data=D05)
+T1 <- t.test(len~supp,paired=FALSE,var.equal=FALSE,data=D1)
+T2 <- t.test(len~supp,paired=FALSE,var.equal=FALSE,data=D2)
+```
+
+
+```{r}
+T05$conf.int
+T1$conf.int
+T2$conf.int
+
+```
+
+
+
+## Conclusion
+For dose 2 mg the supplement form doesn't have significance
+But for doses 0.5 and 1 mg OJ significally better.
